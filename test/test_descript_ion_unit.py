@@ -26,9 +26,9 @@ class DescriptIonTest(unittest.TestCase):
             #self.description)
 
     def test_description_file_wrapper(self):
-        with descript.ion.dopen(self.tmp_filename) as descript_file:
+        with descript.ion.dopen(self.tmp_filename, 'w') as descript_file:
             descript_file.write(self.description)
-        with descript.ion.dopen(self.tmp_filename) as descript_file:
+        with descript.ion.dopen(self.tmp_filename, 'r') as descript_file:
             self.assertEqual(descript_file.read(), self.description)
 
     def test_two_files(self):
@@ -45,3 +45,5 @@ class DescriptIonTest(unittest.TestCase):
 if __name__ == '__main__':
     tests = unittest.TestLoader().loadTestsFromTestCase(DescriptIonTest)
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+#for token in shlex.shlex('"filenam with spaces.txt" long long \ndescription', ''): print token
