@@ -20,6 +20,12 @@ class DescriptIonTest(unittest.TestCase):
         self.assertEqual(descript.ion.loads(self.tmp_filename),
             self.description)
 
+    def test_read_write_long_filename(self):
+        self.tmp_filename += ' (Copy)'
+        descript.ion.dumps(self.tmp_filename, self.description)
+        self.assertEqual(descript.ion.loads(self.tmp_filename),
+            self.description)
+
     def test_description_file_wrapper(self):
         with descript.ion.dopen(self.tmp_filename, 'w') as descript_file:
             descript_file.write(self.description)

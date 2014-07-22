@@ -33,7 +33,7 @@ def load_description_file(filename):
         with open(filename, 'r') as descript_file:
             for line in descript_file:
                 lexer = shlex.shlex(line)
-                key = lexer.get_token()
+                key = lexer.get_token().strip('"')
                 value = ' '.join(list(lexer))
                 result[key] = value
     return result
@@ -77,24 +77,9 @@ class Description(object):
     def close(self, *args, **kwargs):
         return self._file.close()
 
-    def flush(self):
-        return self._file.flush()
-
-    def isatty(self):
-        return self._file.isatty()
-
-    def next(self):
-        return self._file.next()
-
     def read(self, *args, **kwargs):
         self._file.seek(0)
         return self._file.read(*args, **kwargs)
-
-    def readline(self, *args, **kwargs):
-        return self._file.readline(*args, **kwargs)
-
-    def seek(self, *args, **kwargs):
-        return self._file.seek(*args, **kwargs)
 
     def write(self, *args, **kwargs):
         result = self._file.write(*args, **kwargs)
