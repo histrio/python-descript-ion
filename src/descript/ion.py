@@ -38,6 +38,7 @@ def load_description_file(filename):
                 result[key] = value
     return result
 
+
 def save_description_file(filename, desc):
     with open(filename, 'w') as descript_file:
         for k, v in desc.items():
@@ -45,7 +46,6 @@ def save_description_file(filename, desc):
                 k = '"' + k + '"'
             line = "%s %s\r\n" % (k, v)
             descript_file.write(line)
-
 
 
 def dumps(target_file, description):
@@ -103,9 +103,5 @@ class Description(object):
         return result
 
 
-
-
 def dopen(target_file, *args, **kwargs):
     return Description(target_file, *args, **kwargs)
-    #description_filename = _get_description_filename(target_file)
-    #return open(description_filename, 'w+')
