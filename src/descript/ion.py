@@ -13,14 +13,14 @@ DESCRIPTION_FILE = 'descript.ion'
 
 def is_description_file(filename):
     return (os.path.isfile(filename)
-        and os.path.basename(filename).lower() == DESCRIPTION_FILE)
+            and os.path.basename(filename).lower() == DESCRIPTION_FILE)
 
 
 def _get_description_filename(target_file):
     descript_path = os.path.dirname(os.path.abspath(target_file))
     try:
         result, = [dfile for dfile in os.listdir(descript_path)
-            if is_description_file(dfile)]
+                   if is_description_file(dfile)]
     except ValueError:
         result = os.path.join(descript_path, DESCRIPTION_FILE)
     return result

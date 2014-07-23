@@ -18,13 +18,13 @@ class DescriptIonTest(unittest.TestCase):
     def test_read_write(self):
         descript.ion.dumps(self.tmp_filename, self.description)
         self.assertEqual(descript.ion.loads(self.tmp_filename),
-            self.description)
+                         self.description)
 
     def test_read_write_long_filename(self):
         self.tmp_filename += ' (Copy)'
         descript.ion.dumps(self.tmp_filename, self.description)
         self.assertEqual(descript.ion.loads(self.tmp_filename),
-            self.description)
+                         self.description)
 
     def test_description_file_wrapper(self):
         with descript.ion.dopen(self.tmp_filename, 'w') as descript_file:
@@ -39,9 +39,9 @@ class DescriptIonTest(unittest.TestCase):
         descript.ion.dumps(self.tmp_filename, self.description)
         descript.ion.dumps(self.tmp2_filename, self.description2)
         self.assertEqual(descript.ion.loads(self.tmp_filename),
-            self.description)
+                         self.description)
         self.assertEqual(descript.ion.loads(self.tmp2_filename),
-            self.description2)
+                         self.description2)
 
 if __name__ == '__main__':
     tests = unittest.TestLoader().loadTestsFromTestCase(DescriptIonTest)

@@ -5,6 +5,7 @@ from setuptools import setup
 
 sys.path.insert(0, os.path.abspath("src"))
 
+"""Simple library for descript.ion files manipulation"""
 
 def read(fname):
     try:
@@ -15,7 +16,7 @@ def read(fname):
 setup(
     name="descript",
     version='0.0.1',
-    description=read('DESCRIPTION'),
+    description=__doc__,
     keywords="descript.ion file description handler",
     author="Rinat F Sabitov",
     author_email="rinat.sabitov@gmail.ru",
