@@ -13,35 +13,55 @@ class DescriptIonTest(unittest.TestCase):
 
     def setUp(self):
         self.tmp_file, self.tmp_filename = tempfile.mkstemp()
+        self.tmp_file2, self.tmp_filename2 = tempfile.mkstemp()
         self.description = 'test description'
 
+    def test_descripions_as_dict(self):
+        descriptions = descript.ion.Description()
+        descriptions[self.tmp_filename] = self.description
+        self.assertEqual(descriptions[self.tmp_filename], self.description)
+
     def test_read_write(self):
-        descript.ion.dumps(self.tmp_filename, self.description)
-        self.assertEqual(descript.ion.loads(self.tmp_filename),
-            self.description)
+        try:
+            f = descript.ion.open(self.tmp_filename, 'r')
+            f.description = self.description
+            self.assertEqual(f.description, self.description)
+        finally:
+            del f.description
+            f.close()
 
-    def test_read_write_long_filename(self):
-        self.tmp_filename += ' (Copy)'
-        descript.ion.dumps(self.tmp_filename, self.description)
-        self.assertEqual(descript.ion.loads(self.tmp_filename),
-            self.description)
+    def test_read_write_with_context(self):
+        with descript.ion.open(self.tmp_filename) as f:
+            f.description = self.description
 
-    def test_description_file_wrapper(self):
-        with descript.ion.dopen(self.tmp_filename, 'w') as descript_file:
-            descript_file.write(self.description)
-        with descript.ion.dopen(self.tmp_filename, 'r') as descript_file:
-            self.assertEqual(descript_file.read(), self.description)
+        with descript.ion.open(self.tmp_filename) as f:
+            self.assertEqual(f.description, self.description)
+            del f.description
 
-    def test_two_files(self):
-        self.tmp2_file, self.tmp2_filename = tempfile.mkstemp()
-        self.description2 = 'test description2'
+    def test_read_write_binary(self):
+        with descript.ion.open(self.tmp_filename, 'wb') as f:
+            f.description = self.description
 
-        descript.ion.dumps(self.tmp_filename, self.description)
-        descript.ion.dumps(self.tmp2_filename, self.description2)
-        self.assertEqual(descript.ion.loads(self.tmp_filename),
-            self.description)
-        self.assertEqual(descript.ion.loads(self.tmp2_filename),
-            self.description2)
+        with descript.ion.open(self.tmp_filename, 'rb') as f:
+            self.assertEqual(f.description, self.description)
+            del f.description
+
+    def test_read_write_with_two_files(self):
+        try:
+            f = descript.ion.open(self.tmp_filename, 'r')
+            f2 = descript.ion.open(self.tmp_filename2, 'r')
+
+            f.description = self.description
+            f2.description = self.description+'2'
+
+            self.assertEqual(f.description, self.description)
+            self.assertEqual(f2.description, self.description+'2')
+        finally:
+            del f.description
+            del f2.description
+            f.close()
+            f2.close()
+
 
 if __name__ == '__main__':
     tests = unittest.TestLoader().loadTestsFromTestCase(DescriptIonTest)

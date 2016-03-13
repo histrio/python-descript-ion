@@ -40,5 +40,4 @@ setup(
     zip_safe=False,
     long_description=read('README'),
     test_suite='test',
-    tests_require=['mock', 'nose'],
 )

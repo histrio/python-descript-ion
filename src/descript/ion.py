@@ -5,88 +5,71 @@ Email: rinat.sabitov@gmail.com
 Description: simple library that provides access to DESCRIPT.ION files
 """
 
-import os.path
-import StringIO
+import os
+import errno
 
 DESCRIPTION_FILE = 'descript.ion'
 
-
-def is_description_file(filename):
-    return (os.path.isfile(filename)
-        and os.path.basename(filename).lower() == DESCRIPTION_FILE)
+native_open = open
 
 
-def _get_description_filename(target_file):
-    descript_path = os.path.dirname(os.path.abspath(target_file))
-    try:
-        result, = [dfile for dfile in os.listdir(descript_path)
-            if is_description_file(dfile)]
-    except ValueError:
-        result = os.path.join(descript_path, DESCRIPTION_FILE)
-    return result
+def open(*args, **kwargs):
+    result = native_open(*args, **kwargs)
+    return DescriptionedFileObject(result)
 
 
-def load_description_file(filename):
-    import shlex
-    result = {}
-    if os.path.isfile(filename):
-        with open(filename, 'r') as descript_file:
-            for line in descript_file:
-                lexer = shlex.shlex(line)
-                key = lexer.get_token().strip('"')
-                value = ' '.join(list(lexer))
-                result[key] = value
-    return result
-
-
-def save_description_file(filename, desc):
-    with open(filename, 'w') as descript_file:
-        for k, v in desc.items():
-            if ' ' in k:
-                k = '"' + k + '"'
-            line = "%s %s\r\n" % (k, v)
-            descript_file.write(line)
-
-
-def dumps(target_file, description):
-    description_filename = _get_description_filename(target_file)
-    desc = load_description_file(description_filename)
-    desc[os.path.basename(target_file)] = description
-    save_description_file(description_filename, desc)
-
-
-def loads(target_file):
-    description_filename = _get_description_filename(target_file)
-    desc = load_description_file(description_filename)
-    return desc.get(os.path.basename(target_file))
+def locate_decription_file(filename):
+    cwd = os.path.dirname(filename)
+    alt = (fn for fn in os.listdir(cwd) if fn.lower() == DESCRIPTION_FILE)
+    return os.path.join(cwd, next(alt, DESCRIPTION_FILE))
 
 
 class Description(object):
 
-    def __init__(self, target_file, *args, **kwargs):
-        self.target_file = target_file
-        self._file = StringIO.StringIO()
-        self._file.write(loads(target_file))
+    def __getitem__(self, key):
+        dfile = locate_decription_file(key)
+        with native_open(dfile, 'r') as f:
+            return f.read()
+
+    def __setitem__(self, key, value):
+        dfile = locate_decription_file(key)
+        with native_open(dfile, 'w') as f:
+            return f.write(value)
+
+    def __delitem__(self, key):
+        pass
+
+    def __get__(self, obj, objtype):
+        return self[obj.name]
+
+    def __set__(self, obj, val):
+        self[obj.name] = val
+
+    def __delete__(self, obj):
+        dfile = locate_decription_file(obj.name)
+        try:
+            os.remove(dfile)
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                raise
+
+    def __contains__(self, key):
+        return False
+
+
+class DescriptionedFileObject(object):
+
+    description = Description()
+
+    def __init__(self, fileobject):
+        self.fileobject = fileobject
+
+    def __getattr__(self, attr):
+        return getattr(self.fileobject, attr)
 
     def __enter__(self):
+        self.fileobject = self.fileobject.__enter__()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
-    def close(self, *args, **kwargs):
-        return self._file.close()
-
-    def read(self, *args, **kwargs):
-        self._file.seek(0)
-        return self._file.read(*args, **kwargs)
-
-    def write(self, *args, **kwargs):
-        result = self._file.write(*args, **kwargs)
-        self._file.seek(0)
-        dumps(self.target_file, self._file.read())
-        return result
-
-
-def dopen(target_file, *args, **kwargs):
-    return Description(target_file, *args, **kwargs)
+    def __exit__(self, *args, **kwargs):
+        return self.fileobject.__exit__(*args, **kwargs)
