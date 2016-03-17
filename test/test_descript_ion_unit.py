@@ -50,7 +50,6 @@ class DescriptIonTest(unittest.TestCase):
         try:
             f = descript.ion.open(self.tmp_filename, 'r')
             f2 = descript.ion.open(self.tmp_filename2, 'r')
-
             f.description = self.description
             f2.description = self.description+'2'
 
