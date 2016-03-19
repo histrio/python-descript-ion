@@ -6,7 +6,8 @@ Description: simple library that provides access to DESCRIPT.ION files
 """
 
 import os
-import errno
+import tempfile
+from shutil import copyfile
 
 DESCRIPTION_FILE = 'descript.ion'
 
@@ -25,37 +26,48 @@ def locate_decription_file(filename):
     return result
 
 
-def delete_key_from_file(fh, key):
-    pos = 0
-    for line in fh:
-        head, tail = line.split(' ', 1)
-        if head != key:
-            fh.seek(pos)
-            fh.write(line)
-            pos = fh.tell()
-    fh.truncate()
+def parse_line(line):
+    head, tail = line.split(' ', 1)
+    return head.strip(), tail.strip()
+
+
+def delete_key(key):
+    dfile = locate_decription_file(key)
+    if not os.path.isfile(dfile):
+        return
+    with tempfile.NamedTemporaryFile('w+') as dst:
+        with native_open(dfile, 'r') as src:
+            for line in src:
+                head, tail = parse_line(line)
+                if head != key:
+                    dst.write(line)
+            dst.flush()
+        copyfile(dst.name, dfile)
+
+
+def add_key(key, value):
+    dfile = locate_decription_file(key)
+    with native_open(dfile, 'a') as fh:
+        line = key+' '+value+'\n'
+        fh.write(line)
 
 
 class Description(object):
 
     def __getitem__(self, key):
-        dfile = locate_decription_file(key)
-        with native_open(dfile, 'r') as f:
-            for line in f:
-                head, tail = line.split(' ', 1)
+        src = locate_decription_file(key)
+        with native_open(src, 'r') as src:
+            for line in src:
+                head, tail = parse_line(line)
                 if head == key:
-                    return tail.rstrip('\n')
+                    return tail
 
     def __setitem__(self, key, value):
-        dfile = locate_decription_file(key)
-        with native_open(dfile, 'a+') as f:
-            delete_key_from_file(f, key)
-            f.write(key+' '+value+'\n')
+        del self[key]
+        add_key(key, value)
 
     def __delitem__(self, key):
-        dfile = locate_decription_file(key)
-        with native_open(dfile, 'a+') as fh:
-            delete_key_from_file(fh, key)
+        delete_key(key)
 
     def __get__(self, obj, objtype):
         return self[obj.name]
