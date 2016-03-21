@@ -61,6 +61,12 @@ class DescriptIonTest(unittest.TestCase):
             f.close()
             f2.close()
 
+    def test_read_write_with_file_with_spaces_in_name(self):
+        with descript.ion.open(self.tmp_filename+' test', 'a+') as f:
+            f.description = self.description
+            self.assertEqual(f.description, self.description)
+            del f.description
+
 
 if __name__ == '__main__':
     tests = unittest.TestLoader().loadTestsFromTestCase(DescriptIonTest)

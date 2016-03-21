@@ -27,7 +27,10 @@ def locate_decription_file(filename):
 
 
 def parse_line(line):
-    head, tail = line.split(' ', 1)
+    if line.startswith('"'):
+        head, tail = line[line.index('"') + 1:line.rindex('"')], line[line.rindex('"')+1:]
+    else:
+        head, tail = line.split(' ', 1)
     return head.strip(), tail.strip()
 
 
@@ -48,6 +51,8 @@ def delete_key(key):
 def add_key(key, value):
     dfile = locate_decription_file(key)
     with native_open(dfile, 'a') as fh:
+        if " " in key:
+            key = '"'+key+'"'
         line = key+' '+value+'\n'
         fh.write(line)
 
