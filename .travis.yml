@@ -16,13 +16,10 @@ notifications:
     on_failure: change
 
 install:
-  - pip install "pip<8.0.0"
-  - pip install "coverage==3.7.1"
-  - pip install unittest2
-  - pip install mock requests nose responses coveralls
+  - pip install unittest2 pip coverage install nose coveralls
 
 script:
-  - nosetests -vv --with-coverage --cover-erase --cover-package=pycouchdb --with-doctest
+  - nosetests -vv --with-coverage --cover-erase --cover-package=descript.ion --with-doctest
 
 after_success:
     - coveralls
