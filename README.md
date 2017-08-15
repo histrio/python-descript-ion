@@ -1,6 +1,8 @@
 python-descript-ion
 ===================
 
+[![Build Status](https://travis-ci.org/histrio/python-descript-ion.svg?branch=master)](https://travis-ci.org/histrio/python-descript-ion)
+
 Simple library for `descript.ion` files manipulation 
 
 Examples:
