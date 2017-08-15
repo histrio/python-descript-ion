@@ -21,12 +21,3 @@ Examples:
     #Remove description
     with descript.ion.open(filename) as f:
         del f.description
-
-
-
-
-
-Tests:
------
-
-[![Build Status](https://drone.io/github.com/histrio/python-descript-ion/status.png)](https://drone.io/github.com/histrio/python-descript-ion/latest)
