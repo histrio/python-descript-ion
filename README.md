@@ -2,6 +2,7 @@ python-descript-ion
 ===================
 
 [![Build Status](https://travis-ci.org/histrio/python-descript-ion.svg?branch=master)](https://travis-ci.org/histrio/python-descript-ion)
+[![PyPI](https://img.shields.io/pypi/v/descript.svg)]()
 
 Simple library for `descript.ion` files manipulation 
 
