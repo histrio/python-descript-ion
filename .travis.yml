@@ -17,7 +17,7 @@ notifications:
     on_failure: change
 
 install:
-  - pip install unittest2 pip coverage install nose coveralls
+  - unittest2 pip coverage install nose coveralls
 
 script:
   - nosetests -vv --with-coverage --cover-erase --cover-package=descript.ion --with-doctest
