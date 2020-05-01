@@ -3,15 +3,10 @@ File: test_descript_ion_unit.py
 Author: Rinat F Sabitov
 Description:
 """
+import os
 import pytest
-
-
 import descript.ion
 
-
-# tmp_file, tmp_filename = tempfile.mkstemp()
-# tmp_file2, tmp_filename2 = tempfile.mkstemp()
-# description = 'test description'
 
 test_descriptions = [
     "test description",
@@ -90,3 +85,28 @@ def test_read_write_with_file_with_spaces_in_name(description, tmp_filename):
         f.description = description
         assert f.description == description
         del f.description
+
+
+@pytest.mark.parametrize('description', test_descriptions)
+def test_do_not_store_full_path(description, tmp_filename):
+    with descript.ion.open(tmp_filename) as f:
+        f.description = description
+
+    loc = descript.ion.locate_decription_file(tmp_filename)
+    with open(loc) as f:
+        data = f.read()
+
+    basename = os.path.basename(tmp_filename)
+    assert data == '{0} {1}\n'.format(basename, description)
+
+
+@pytest.mark.parametrize('description', test_descriptions)
+def test_no_need_full_path(description, tmpdir, tmp_filename):
+    base_tmp_filename = os.path.basename(tmp_filename)
+
+    tmpdir.join(base_tmp_filename).write('something')
+    tmpdir.join(descript.ion.DESCRIPTION_FILE).write("{0} {1}".format(base_tmp_filename, description))
+
+    with descript.ion.open(tmp_filename) as f:
+        assert f.description == description
+
