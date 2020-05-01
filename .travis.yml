@@ -15,11 +15,11 @@ notifications:
     on_failure: change
 
 install:
-  - pip install poetry
+  - pip install poetry pytest-cov coveralls
 
 script:
   - poetry install
-  - pytest
+  - pytest --cov descript
 
 after_success:
     - coveralls
