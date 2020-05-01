@@ -28,14 +28,24 @@ def locate_decription_file(filename):
 
 def parse_line(line):
     if line.startswith('"'):
-        head, tail = line[line.index('"') + 1:line.rindex('"')], line[line.rindex('"')+1:]
+        head, tail = line[line.index('"') + 1:line.rindex('"')], line[line.rindex('"') + 1:]
     else:
         head, tail = line.split(' ', 1)
     return head.strip(), tail.strip()
 
 
-def delete_key(key):
-    dfile = locate_decription_file(key)
+def normalize_key(clbl):
+
+    def wrapper(key, *args, **kwargs):
+        dfile = locate_decription_file(key)
+        key = os.path.basename(key)
+        return clbl(dfile, key, *args, **kwargs)
+
+    return wrapper
+
+
+@normalize_key
+def delete_key(dfile, key):
     if not os.path.isfile(dfile):
         return
     with tempfile.NamedTemporaryFile('w+') as dst:
@@ -48,24 +58,28 @@ def delete_key(key):
         copyfile(dst.name, dfile)
 
 
-def add_key(key, value):
-    dfile = locate_decription_file(key)
+@normalize_key
+def add_key(dfile, key, value):
     with native_open(dfile, 'a') as fh:
         if " " in key:
-            key = '"'+key+'"'
-        line = key+' '+value+'\n'
+            key = '"' + key + '"'
+        line = key + ' ' + value + '\n'
         fh.write(line)
+
+
+@normalize_key
+def get_key(dfile, key):
+    with native_open(dfile, 'r') as dfile:
+        for line in dfile:
+            head, tail = parse_line(line)
+            if head == key:
+                return tail
 
 
 class Description(object):
 
     def __getitem__(self, key):
-        src = locate_decription_file(key)
-        with native_open(src, 'r') as src:
-            for line in src:
-                head, tail = parse_line(line)
-                if head == key:
-                    return tail
+        return get_key(key)
 
     def __setitem__(self, key, value):
         del self[key]
