@@ -1,13 +1,12 @@
-python-descript-ion
-===================
+# python-descript-ion
 
 [![Build Status](https://travis-ci.org/histrio/python-descript-ion.svg?branch=master)](https://travis-ci.org/histrio/python-descript-ion)
 [![PyPI](https://img.shields.io/pypi/v/descript.svg)]()
+[![Documentation Status](https://readthedocs.org/projects/python-descript-ion/badge/?version=latest)](https://python-descript-ion.readthedocs.io/en/latest/?badge=latest)
 
 Simple library for `descript.ion` files manipulation 
 
-Examples:
----------
+## Examples:
 
     import descript.ion
 
