@@ -63,6 +63,7 @@ def add_key(dfile, key, value):
     with native_open(dfile, 'a') as fh:
         if " " in key:
             key = '"' + key + '"'
+        value = value.replace('\n', '\\n')
         line = key + ' ' + value + '\n'
         fh.write(line)
 
@@ -73,7 +74,7 @@ def get_key(dfile, key):
         for line in dfile:
             head, tail = parse_line(line)
             if head == key:
-                return tail
+                return tail.replace('\\n', '\n')
 
 
 class Description(object):

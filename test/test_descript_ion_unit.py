@@ -10,6 +10,9 @@ import descript.ion
 
 test_descriptions = [
     "test description",
+    "\ntest description",
+    "test \ndescription",
+    "test description\n",
 ]
 
 
@@ -87,8 +90,8 @@ def test_read_write_with_file_with_spaces_in_name(description, tmp_filename):
         del f.description
 
 
-@pytest.mark.parametrize('description', test_descriptions)
-def test_do_not_store_full_path(description, tmp_filename):
+def test_do_not_store_full_path(tmp_filename):
+    description = 'description'
     with descript.ion.open(tmp_filename) as f:
         f.description = description
 
@@ -100,8 +103,8 @@ def test_do_not_store_full_path(description, tmp_filename):
     assert data == '{0} {1}\n'.format(basename, description)
 
 
-@pytest.mark.parametrize('description', test_descriptions)
-def test_no_need_full_path(description, tmpdir, tmp_filename):
+def test_no_need_full_path(tmpdir, tmp_filename):
+    description = 'description'
     base_tmp_filename = os.path.basename(tmp_filename)
 
     tmpdir.join(base_tmp_filename).write('something')
