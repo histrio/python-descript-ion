@@ -14,7 +14,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^2.7 | ^3.8 | ^3.7 | ^3.6"
+python = "^2.7 | ^3.8 | ^3.7 | ^3.6 | ^3.9 | ^3.10"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
