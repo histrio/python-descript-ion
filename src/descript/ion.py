@@ -10,16 +10,17 @@ import tempfile
 from shutil import copyfile
 
 DESCRIPTION_FILE = 'descript.ion'
-
 native_open = open
 
 
 def open(*args, **kwargs):
+    """Open a file and wrap it with DescriptionedFileObject."""
     result = native_open(*args, **kwargs)
     return DescriptionedFileObject(result)
 
 
 def locate_decription_file(filename):
+    """Locate the DESCRIPT.ION file for the given filename."""
     cwd = os.path.dirname(filename)
     alt = (fn for fn in os.listdir(cwd) if fn.lower() == DESCRIPTION_FILE)
     result = os.path.join(cwd, next(alt, DESCRIPTION_FILE))
@@ -78,6 +79,9 @@ def get_key(dfile, key):
 
 
 class Description(object):
+    """
+    Provides dictionary-like methods for DESCRIPT.ION interactions.
+    """
 
     def __getitem__(self, key):
         return get_key(key)
@@ -103,6 +107,9 @@ class Description(object):
 
 
 class DescriptionedFileObject(object):
+    """
+    A file object wrapper that provides an interface to interact with its corresponding DESCRIPTION.
+    """
 
     description = Description()
 
